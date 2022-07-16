@@ -14,6 +14,8 @@ This program is free software: you can redistribute it and/or modify
 ******************************************************************************
 V.12.8
 -Change web log (Thank you [oktus])
+
 -Fix linuxsat-support.com page number
+
 -Fix some bugs on Android devices
 *******************************************
