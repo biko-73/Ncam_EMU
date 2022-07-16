@@ -1,8 +1,8 @@
 # Ncam_EMU
 Ncam Emu compiled and patched by READ
 
- source for fairbird : https://github.com/fairbird/NCam
- @@ -6,8 +6,10 @@ License
+source for fairbird : https://github.com/fairbird/NCam
+@@ -6,8 +6,10 @@ License
 =========================
 NCam: Open Source CAM
 Copyright (C) 2015-2019 Update and patch by RAED (Fairbird).
