@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rm -rf /usr/uninstall/Remove_ncam.nab
+rm -rf /usr/bin/ncam
+rm -rf /etc/ncam.emu
+
+exit 0

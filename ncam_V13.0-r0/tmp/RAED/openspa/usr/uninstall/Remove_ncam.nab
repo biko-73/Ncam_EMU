@@ -1,0 +1,8 @@
+#!/bin/sh
+
+rm -rf /etc/tuxbox/config/ncam.*
+rm -rf /usr/uninstall/Remove_ncam.nab
+rm -rf /usr/bin/ncam*
+rm -rf /usr/script/ncam
+
+exit 0

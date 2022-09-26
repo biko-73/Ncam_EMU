@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rm -rf /usr/bin/ncam
+rm -rf /usr/camscript/Ncam_ncam.sh
+rm -rf /usr/uninstall/RemoveNCAM.del
+
+exit 0
