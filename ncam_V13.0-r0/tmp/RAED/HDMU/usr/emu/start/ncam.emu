@@ -1,7 +1,0 @@
-name = Ncam13.0
-start = /usr/emu/ncam -d -c /etc/tuxbox/config/ncam.conf &
-stop = killall -9 ncam
-
-########################################
-######      Edited by RAED        ######
-########################################

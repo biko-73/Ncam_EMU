@@ -1,7 +1,0 @@
-#!/bin/sh
-
-rm -rf /var/bin/ncam
-rm -rf /var/emu_scripts/EGcam_ncam.sh
-rm -rf /var/uninstall/ncam.del
-
-exit 0

@@ -1,4 +1,0 @@
-emuname = ncam_13.0
-binname = ncam
-startcam = /usr/bin/ncam
-stopcam = killall -9 ncam
