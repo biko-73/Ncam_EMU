@@ -1,0 +1,59 @@
+#!/bin/sh
+#### "*******************************************"
+#### "              Created By RAED              *"
+#### "*        << Edited by  MOHAMED_OS >>       *"
+#### "*        ..:: www.tunisia-sat.com ::..     *"
+#### "*******************************************"
+
+[ "$1" != "upgrade" ] || exit 0
+BIN="ncam"
+echo "Removing All 'Ncam' Files ...."
+
+############################# Delete Binar ##################################################
+rm -f /usr/bin/${BIN} >/dev/null 2>&1
+rm -f /usr/bin/cam/${BIN} >/dev/null 2>&1
+rm -f /usr/bin/camd/${BIN} >/dev/null 2>&1
+rm -f /usr/bin/softcams/${BIN} >/dev/null 2>&1
+rm -f /usr/bin/emu/${BIN} >/dev/null 2>&1
+rm -f /var/emu/${BIN} >/dev/null 2>&1
+rm -f /var/bin/${BIN} >/dev/null 2>&1
+
+############################# Delete Script ##################################################
+rm -f /etc/init.d/softcam.Ncam* >/dev/null 2>&1
+rm -f /etc/Ncam* >/dev/null 2>&1
+rm -f /usr/uninstall/RemoveNCAM.del >/dev/null 2>&1
+rm -f /etc/init.d/Ncam* >/dev/null 2>&1
+rm -f /usr/camscript/"Ncam_${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/emu_scripts/"EGcam_${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/LTCAM/"CAM_${BIN:?}"* >/dev/null 2>&1
+rm -f /var/emuscript/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/script/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/script/cam/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/emu/start/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/CamEmu/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/ppteam/"${BIN:?}"* >/dev/null 2>&1
+rm -f /etc/cam.d/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/ppuninstall/"${BIN:?}"* >/dev/null 2>&1
+rm -f /usr/uninstall/"${BIN:?}"* >/dev/null 2>&1
+rm -f /var/uninstall/"${BIN:?}"* >/dev/null 2>&1
+###############################################################################
+
+if type update-rc.d >/dev/null 2>/dev/null; then
+    if [ -n "$D" ]; then
+        OPT="-r $D"
+    else
+        OPT="-s"
+    fi
+    update-rc.d $OPT softcam defaults 50 >/dev/null 2>&1
+fi
+
+echo
+echo "*******************************************"
+echo "*             Removed Finished            *"
+echo "*                                         *"
+echo "*         Need To Restart Enigma2         *"
+echo "*                                         *"
+echo "*    Patched and compile By RAED          *"
+echo "*******************************************"
+echo
+exit 0

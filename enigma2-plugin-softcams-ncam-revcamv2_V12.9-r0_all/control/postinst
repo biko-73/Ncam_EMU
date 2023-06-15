@@ -1,0 +1,500 @@
+#!/bin/sh
+###############################################################
+#Created By RAED 16-07-2017 TO OE2.0 (MIPS) Boxes             #
+#Updated By RAED 14-10-2018                                   #
+#Updated By RAED 03-11-2018                                   #
+#Updated By RAED 14-02-2019                                   #
+#Updated By RAED 02-05-2019 fix checking libss & libcrypto    #
+#Updated By RAED 21-05-2020 Disable checking libss no need    #
+#Edit By MOHAMED_OS 16-02-2021                                #
+#Updated By MOHAMED_OS 17-06-2021 Enable checking libss       #
+#Updated By MOHAMED_OS 05-09-2021 Enable checking dm800 clone #
+#Updated By MOHAMED_OS 30-11-2021 Clean Script                #
+#Updated By MOHAMED_OS 18-07-2022 Update And Clean            #
+###############################################################
+
+URL="https://raw.githubusercontent.com/MOHAMED19OS/SoftCam_Emu/main/Enigma2/SoftCam.Key"
+
+#### Tmp work director
+TMPDIR="/tmp/DzOSat"
+BINPATH="${TMPDIR}/ncam"
+ARMBIN="${TMPDIR}/ARM/ncam"
+# ARMBINopenssl="${TMPDIR}/ARM/ncam-Openssl11"
+MIPSBIN="${TMPDIR}/MIPS/ncam"
+# MIPSBINopenssl="${TMPDIR}/MIPS/ncam-Openssl11"
+SH4BIN="${TMPDIR}/SH4/ncam"
+# SH4BINopenssl="${TMPDIR}/SH4/ncam-Openssl11"
+AARCH64BIN="${TMPDIR}/AARCH64/ncam"
+# AARCH64BINopenssl="${TMPDIR}/AARCH64/ncam-Openssl11"
+
+# Path of Config Files
+CONFIGPATH='/etc/tuxbox/config'
+
+# Path of Config File in Boxes Avilable
+CONFIGconf="${CONFIGPATH}/ncam.conf"
+CONFIGdvbapi="${CONFIGPATH}/ncam.dvbapi"
+CONFIGprovid="${CONFIGPATH}/ncam.provid"
+CONFIGserver="${CONFIGPATH}/ncam.server"
+CONFIGservices="${CONFIGPATH}/ncam.services"
+CONFIGsrvid2="${CONFIGPATH}/ncam.srvid2"
+CONFIGuser="${CONFIGPATH}/ncam.user"
+CCCAMCFG="${CONFIGPATH}/CCcam.cfg"
+SOFTCAM="${CONFIGPATH}/SoftCam.Key"
+NCAMFS="${CONFIGPATH}/ncam.fs"
+
+# Path of Config File in Tmp Folder
+CONFIGconftmp="${TMPDIR}/etc/tuxbox/config/ncam.conf"
+CONFIGdvbapitmp="${TMPDIR}/etc/tuxbox/config/ncam.dvbapi"
+CONFIGprovidtmp="${TMPDIR}/etc/tuxbox/config/ncam.provid"
+CONFIGservertmp="${TMPDIR}/etc/tuxbox/config/ncam.server"
+CONFIGservicestmp="${TMPDIR}/etc/tuxbox/config/ncam.services"
+CONFIGsrvid2tmp="${TMPDIR}/etc/tuxbox/config/ncam.srvid2"
+CONFIGusertmp="${TMPDIR}/etc/tuxbox/config/ncam.user"
+CONFIGCCCamCFGtmp="${TMPDIR}/etc/tuxbox/config/CCcam.cfg"
+NCAMFStmp="${TMPDIR}/etc/tuxbox/config/ncam.fs"
+
+### find image name type
+IMAGEPATH="/usr/lib/enigma2/python"
+GP3="${IMAGEPATH}/Plugins/Bp/geminimain"
+BLACKHOLE="${IMAGEPATH}/Blackhole"
+OPENBH="${IMAGEPATH}/Screens/BpBlue.py*"
+MEDIASAT="${IMAGEPATH}/MediaSat"
+TSIMAGE="${IMAGEPATH}/Plugins/TSimage"
+VTI="${IMAGEPATH}/Plugins/SystemPlugins/VTIPanel"
+MERLIN3="${IMAGEPATH}/Plugins/Extensions/AddOnManager"
+DREAMELITE="${IMAGEPATH}/DE"
+Demoni="${IMAGEPATH}/Plugins/SystemPlugins/DemonisatManager"
+OPENDROID="${IMAGEPATH}/OPENDROID"
+EGAMI="${IMAGEPATH}/EGAMI"
+Satdreamgr="${IMAGEPATH}/Plugins/Satdreamgr"
+Powerboard="${IMAGEPATH}/Plugins/Extensions/PowerboardCenter"
+PKT="${IMAGEPATH}/Plugins/Extensions/PKT"
+OPENVIX="${IMAGEPATH}/Plugins/SystemPlugins/ViX"
+Domica="${IMAGEPATH}/Plugins/Domica"
+HDMU="${IMAGEPATH}/Plugins/Extensions/HDMUCenter"
+OPENLD="${IMAGEPATH}/Plugins/Extensions/LDteam"
+LT="${IMAGEPATH}/LT"
+TDW="${IMAGEPATH}/Plugins/Extensions/TDW"
+OPENHDF="${IMAGEPATH}/Plugins/Extensions/HDF-Toolbox"
+OPENESI="${IMAGEPATH}/Plugins/Extensions/ExtraAddonss"
+NonSoloSat="${IMAGEPATH}/Plugins/Extensions/NssPanel"
+NEWNIGMA2="${IMAGEPATH}/Plugins/newnigma2"
+SATLODGE="${IMAGEPATH}/Plugins/SatLodge"
+DreamOSat="${IMAGEPATH}/Plugins/Extensions/DreamOSatcamManager"
+
+########### check version off openssl to support correct bin file #####
+# if [ -f /etc/apt/apt.conf ]; then
+#     images="OE2.5 IMAGES:"
+#     STATUS="/var/lib/dpkg/status"
+# elif [ -f /etc/opkg/opkg.conf ]; then
+#     images="OE2.0 IMAGES:"
+#     STATUS='/var/lib/opkg/status'
+# else
+#     echo "Sorry, your device not have the opkg/dpkg folder :("
+# fi
+# if grep -qs 'Package: libssl1.1' cat $STATUS; then
+#     echo "$images openssl 1.1.1"
+#     rm -f $ARMBIN
+#     rm -f $SH4BIN
+#     rm -f $MIPSBIN
+#     rm -f $AARCH64BIN
+#     mv $ARMBINopenssl $ARMBIN
+#     mv $SH4BINopenssl $SH4BIN
+#     mv $MIPSBINopenssl $MIPSBIN
+#     mv $AARCH64BINopenssl $AARCH64BIN
+# fi
+
+#### checking your device and bin file #####
+
+if uname -m | grep -qs armv7l; then
+    echo ':Your Device IS ARM processor ...'
+    if [ ! -f $ARMBIN ]; then
+        echo "**************************"
+        echo "**** Bin file Missing ****"
+        echo "**************************"
+        rm -r $TMPDIR >/dev/null 2>&1
+        exit 1
+    else
+        cp -f $ARMBIN $TMPDIR
+    fi
+elif uname -m | grep -qs aarch64; then
+    echo ':Your Device IS AARCH64 processor ...'
+    if [ ! -f $AARCH64BIN ]; then
+        echo "**************************"
+        echo "**** Bin file Missing ****"
+        echo "**************************"
+        rm -r $TMPDIR >/dev/null 2>&1
+        exit 1
+    else
+        cp -f $AARCH64BIN $TMPDIR
+    fi
+elif uname -m | grep -qs mips; then
+    echo ':Your Device IS MIPS processor ...'
+    if [ ! -f $MIPSBIN ]; then
+        echo "**************************"
+        echo "**** Bin file Missing ****"
+        echo "**************************"
+        rm -r $TMPDIR >/dev/null 2>&1
+        exit 1
+    else
+        cp -f $MIPSBIN $TMPDIR
+    fi
+elif uname -m | grep -qs sh4; then
+    echo ':Your Device IS SH4 processor ...'
+    if [ ! -f $SH4BIN ]; then
+        echo "**************************"
+        echo "**** Bin file Missing ****"
+        echo "**************************"
+        rm -r $TMPDIR >/dev/null 2>&1
+        exit 1
+    else
+        cp -f $SH4BIN $TMPDIR
+    fi
+elif uname -m | grep -qs 7401c0; then #dm800 clone
+    echo ':Your Device IS dm800 clone processor ...'
+    if [ ! -f $MIPSBIN ]; then
+        echo "**************************"
+        echo "**** Bin file Missing ****"
+        echo "**************************"
+        rm -r $TMPDIR >/dev/null 2>&1
+        exit 1
+    else
+        cp -f $MIPSBIN $TMPDIR
+    fi
+else
+    echo 'Sorry, your Device does not have the proper Emu'
+    rm -r $TMPDIR >/dev/null 2>&1
+    exit 1
+fi
+
+#########
+if [ -r $GP3 ]; then
+    echo "GP3 image"
+    cp -rf $TMPDIR/GP3/* / >/dev/null 2>&1
+    cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+else
+    if [ -r $DreamOSat ]; then
+        echo "DreamOSat camManager"
+        cp -rf $TMPDIR/DreamOSat/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "OoZooN" /etc/image-version; then
+        echo "OoZooN image"
+        if [ ! -r /usr/camd ]; then
+            mkdir -p /usr/camd >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/oozoon/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/camd >/dev/null 2>&1
+    elif grep -qs -i "ItalySat" /etc/image-version; then
+        echo "ItalySat image"
+        if [ ! -d /var/bin ]; then
+            ln -sfn /usr/bin /var/bin
+        fi
+        cp -rf $TMPDIR/italysat/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "OpenSPA" /etc/image-version; then
+        echo "OpenSPA image"
+        cp -rf $TMPDIR/openspa/* / >/dev/null 2>&1
+        cp -rf $BINPATH /var/bin >/dev/null 2>&1
+    elif grep -qs -i "titannit" /etc/image-version; then
+        echo " OpenAFF-Titan image"
+        cp -rf $TMPDIR/AFF/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/ >/dev/null 2>&1
+    elif grep -qs -i "openATV" /etc/image-version; then
+        echo "openATV image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "PURE2" /etc/image-version; then
+        echo "PURE2 image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/pbnigma/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam >/dev/null 2>&1
+    elif grep -qs -i "rudream" /etc/image-version; then
+        echo "ruDREAM image"
+        cp -rf $TMPDIR/rudream/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "Peter" /etc/issue.net; then
+        echo "PeterPan image"
+        cp -rf $TMPDIR/PeterPan/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "OpenEight" /etc/image-version; then
+        echo "OpenEight image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "openMips" /etc/image-version; then
+        echo "OpenMips image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/openmips/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam >/dev/null 2>&1
+    elif grep -qs -i "OpenPlus" /etc/image-version; then
+        echo "OpenPlus image"
+        cp -rf $TMPDIR/OpenPlus/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "OpenBox" /etc/issue; then
+        echo "OpenBox image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "teamBlue" /etc/image-version; then
+        echo "teamBlue image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $BLACKHOLE ]; then
+        echo "Blackhole image"
+        cp -rf $TMPDIR/BH/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $OPENBH ]; then
+        echo "OpenBlackhole image"
+        cp -rf $TMPDIR/BH/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $MEDIASAT ]; then
+        echo "MediaSat image"
+        cp -rf $TMPDIR/BH/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $TSIMAGE ]; then
+        echo "OpenTS/Ts image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/ts/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam/ >/dev/null 2>&1
+    elif [ -r $VTI ]; then
+        echo "VTI image"
+        cp -rf $TMPDIR/vti/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $NEWNIGMA2 ]; then
+        echo "newnigma2 image"
+        cp -rf $TMPDIR/newnigma2/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $MERLIN3 ]; then
+        echo "Merlin3 image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/Merlin3/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam >/dev/null 2>&1
+    elif [ -r $DREAMELITE ]; then
+        echo "Dream-Elite image"
+        if [ ! -d /var/bin ]; then
+            ln -sfn /usr/bin /var/bin
+        fi
+        cp -rf $TMPDIR/dreamelite/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $Demoni ]; then
+        echo "DDD-Demoni image"
+        cp -rf $TMPDIR/dddemon/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $OPENDROID ]; then
+        echo "OpenDroid image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $EGAMI ]; then
+        echo "Egami image"
+        if [ ! -d /var/bin ]; then
+            ln -sfn /usr/bin /var/bin
+        fi
+        cp -rf $TMPDIR/egami/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $Satdreamgr ]; then
+        echo "SatdreamGr image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $Powerboard ]; then
+        echo "PBnigma-VIX image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/pbnigma/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam >/dev/null 2>&1
+    elif [ -r $PKT ]; then
+        echo "PKT image"
+        if [ ! -d /var/bin ]; then
+            ln -sfn /usr/bin /var/bin >/dev/null 2>&1
+        fi
+        if [ -d /var/keys ]; then
+            mkdir -p /usr/keys >/dev/null 2>&1
+            cp -rf /var/keys/* /usr/keys >/dev/null 2>&1
+            rm -r /var/keys >/dev/null 2>&1
+        fi
+        ln -sfn /usr/keys /var/keys >/dev/null 2>&1
+        if [ -d $CONFIGPATH ]; then
+            cp -rf $CONFIGPATH/* /usr/keys >/dev/null 2>&1
+            rm -r $CONFIGPATH >/dev/null 2>&1
+            ln -sfn /usr/keys $CONFIGPATH >/dev/null 2>&1
+        else
+            ln -sfn /usr/keys $CONFIGPATH >/dev/null 2>&1
+        fi
+        cp -rf $BINPATH /var/emu >/dev/null 2>&1
+    elif grep -qs -i "OpenNFR" /etc/image-version; then
+        echo "OpenNFR image"
+        if [ ! -r /usr/emu ]; then
+            mkdir -p /usr/emu >/dev/null 2>&1
+        fi
+        cp -rf $BINPATH /usr/emu >/dev/null 2>&1
+    elif [ -r $OPENVIX ]; then
+        echo "OpenVIX image"
+        if [ ! -r /usr/softcams ]; then
+            mkdir -p /usr/softcams >/dev/null 2>&1
+        fi
+        cp -rf $BINPATH /usr/softcams >/dev/null 2>&1
+    elif [ -r $Domica ]; then
+        echo "Domica image"
+        cp -rf $TMPDIR/domica/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $HDMU ]; then
+        echo "HDMU image"
+        if [ ! -r /usr/emu ]; then
+            mkdir -p /usr/emu >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/HDMU/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/emu >/dev/null 2>&1
+    elif [ -r $OPENLD ]; then
+        echo "OpenLD image"
+        cp -rf $TMPDIR/openld/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $LT ]; then
+        echo "LT image"
+        cp -rf $TMPDIR/LT/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $TDW ]; then
+        echo "TDW image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/TDW/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam >/dev/null 2>&1
+    elif [ -r $OPENHDF ]; then
+        echo "OpenHDF image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $OPENESI ]; then
+        echo "OpenESI image"
+        cp -rf $TMPDIR/OpenESI/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $NonSoloSat ]; then
+        echo "NonSoloSat image"
+        if [ ! -r /usr/bin/cam ]; then
+            mkdir -p /usr/bin/cam >/dev/null 2>&1
+        fi
+        cp -rf $TMPDIR/NssPanel/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/cam >/dev/null 2>&1
+    elif grep -qs -i "openpli" /etc/issue; then
+        echo "OpenPLI image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif grep -qs -i "openvision" /etc/issue; then
+        echo "OpenVision image"
+        cp -rf $TMPDIR/openpli/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin >/dev/null 2>&1
+    elif [ -r $SATLODGE ]; then
+        echo " Satlodge image"
+        cp -rf $TMPDIR/satlodge/* / >/dev/null 2>&1
+        cp -rf $BINPATH /usr/bin/ >/dev/null 2>&1
+    else
+        rm -r $TMPDIR >/dev/null 2>&1
+
+        echo "***************************************************"
+        echo "*                                                 *"
+        echo "* No emu script to this image now .. ask about it *"
+        echo "*                                                 *"
+        echo "***************************************************"
+        rm -rf /tmp/"{enigma2-plugin-softcams-ncam:?}"*
+        exit 1
+    fi
+fi
+
+######### checking config files #########
+if [ ! -d $CONFIGPATH ]; then
+    mkdir -p $CONFIGPATH >/dev/null 2>&1
+fi
+if [ -f $CONFIGconf ] && [ -f $CONFIGdvbapi ] && [ -f $CONFIGprovid ] && [ -f $CONFIGserver ] && [ -f $CONFIGservices ] && [ -f $CONFIGsrvid2 ] && [ -f $CONFIGuser ] && [ -f $CCCAMCFG ] && [ -f $NCAMFS ] && [ -f $SOFTCAM ]; then
+    echo "[ All Config Files found ]"
+else
+    echo "[ Some Config Files Missing .. will send it ]"
+    echo "---------------------------------------------"
+    if [ ! -f $CONFIGconf ]; then
+        cp -f $CONFIGconftmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.conf) file]"
+    fi
+    if [ ! -f $CONFIGdvbapi ]; then
+        cp -f $CONFIGdvbapitmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.dvbapi) file]"
+    fi
+    if [ ! -f $CONFIGprovid ]; then
+        cp -f $CONFIGprovidtmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.provid) file]"
+    fi
+    if [ ! -f $CONFIGserver ]; then
+        cp -f $CONFIGservertmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.server) file]"
+    fi
+    if [ ! -f $CONFIGservices ]; then
+        cp -f $CONFIGservicestmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.services) file]"
+    fi
+    if [ ! -f $CONFIGsrvid2 ]; then
+        cp -f $CONFIGsrvid2tmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.srvid2) file]"
+    fi
+    if [ ! -f $CONFIGuser ]; then
+        cp -f $CONFIGusertmp $CONFIGPATH >/dev/null 2>&1
+        echo "[ send (ncam.user) file]"
+    fi
+    if [ ! -f $CCCAMCFG ]; then
+        cp -f $CONFIGCCCamCFGtmp $CCCAMCFG >/dev/null 2>&1
+        echo "[ send (CCcam.cfg) file]"
+    fi
+    if [ ! -f $NCAMFS ]; then
+        cp -f ${NCAMFStmp} ${NCAMFS} >/dev/null 2>&1
+        echo "[ send (ncam.fs) file]"
+    fi
+    if [ ! -f $SOFTCAM ]; then
+        wget -qO ${SOFTCAM} ${URL} >/dev/null 2>&1
+        echo "[ send (SoftCam.Key) file]"
+    fi
+    echo "---------------------------------------------"
+fi
+rm -f $CONFIGdvbapi >/dev/null 2>&1
+rm -f $CONFIGprovid >/dev/null 2>&1
+rm -f $CONFIGservices >/dev/null 2>&1
+rm -f $CONFIGsrvid2 >/dev/null 2>&1
+cp -f $CONFIGdvbapitmp $CONFIGPATH >/dev/null 2>&1
+cp -f $CONFIGprovidtmp $CONFIGPATH >/dev/null 2>&1
+cp -f $CONFIGservicestmp $CONFIGPATH >/dev/null 2>&1
+cp -f $CONFIGsrvid2tmp $CONFIGPATH >/dev/null 2>&1
+######### checking OpenPLI softcam symlink #########
+if [ -f /etc/init.d/softcam.None ]; then
+    if type update-rc.d >/dev/null 2>/dev/null; then
+        if [ -n "$D" ]; then
+            OPT="-r $D"
+        else
+            OPT="-s"
+        fi
+        update-rc.d $OPT softcam defaults 50 >/dev/null 2>&1
+    fi
+fi
+
+######### Remove Ncam TMP folder ########
+rm -r $TMPDIR >/dev/null 2>&1
+
+echo ""
+echo ""
+echo "-------------------------------------------------------"
+echo "* Ncam Config & Softcam files in [/etc/tuxbox/config] *"
+echo "-------------------------------------------------------"
+echo ""
+echo ""
+echo "*******************************************"
+echo "*             Install Finished            *"
+echo "*                                         *"
+echo "*         Need To Restart Enigma2         *"
+echo "*                                         *"
+echo "*    Patched and compile By RAED          *"
+echo "*******************************************"
+rm -rf /tmp/enigma2-plugin-softcams-ncam*
+sleep 1
+killall -9 enigma2
+
+exit 0

@@ -1,0 +1,12 @@
+#!/bin/sh
+#### "*******************************************"
+#### "              Created By RAED              *"
+#### "*        << Edited by  MOHAMED_OS >>       *"
+#### "*        ..:: www.tunisia-sat.com ::..     *"
+#### "*******************************************"
+
+rm -rf /usr/bin/ncam
+rm -rf /usr/camscript/Ncam_Ncam_RevCam.sh
+rm -rf /usr/uninstall/RemoveNcam_RevCam.del
+
+exit 0

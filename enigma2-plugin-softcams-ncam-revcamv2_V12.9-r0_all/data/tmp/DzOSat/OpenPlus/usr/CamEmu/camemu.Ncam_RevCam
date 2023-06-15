@@ -1,0 +1,12 @@
+emuname = RevcamV2_Ncam
+binname = ncam
+binname = revcamv2
+startcam = /usr/bin/ncam -b -r 2 -c /etc/tuxbox/config | /usr/bin/revcamv2 /etc/tuxbox/config/RevcamV2 &
+stopcam = killall -9 ncam
+stopcam = killall -9 revcamv2
+
+#### "*******************************************"
+#### "              Created By RAED              *"
+#### "*        << Edited by  MOHAMED_OS >>       *"
+#### "*        ..:: www.tunisia-sat.com ::..     *"
+#### "*******************************************"
