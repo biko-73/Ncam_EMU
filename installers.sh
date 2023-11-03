@@ -12,7 +12,7 @@
 
 PACKAGE_DIR='Ncam_EMU/main'
 
-MY_IPK="enigma2-plugin-softcams-ncam-supcam_V12.9-r0_all.ipk"
+MY_IPK="enigma2-plugin-softcams-supcam-ncam_14.1-r0_all.ipk"
 MY_DEB=""
 
 ########################################################################################################################
