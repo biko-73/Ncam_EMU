@@ -59,9 +59,9 @@ if [ -f $MY_TMP_FILE ]; then
 	echo $MY_SEP
 	echo ''
 	if which dpkg > /dev/null 2>&1; then
-		apt-get install --reinstall $MY_TMP_FILE -y
+		apt-get install $MY_TMP_FILE -y && apt-get install -f
 	else
-		opkg install --force-reinstall $MY_TMP_FILE
+		opkg install $MY_TMP_FILE
 	fi
 	MY_RESULT=$?
 
