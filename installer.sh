@@ -12,8 +12,8 @@
 
 PACKAGE_DIR='Ncam_EMU/main'
 
-MY_IPK="enigma2-plugin-softcams-ncam_V15.5-r0_all.ipk"
-MY_DEB="enigma2-plugin-softcams-ncam-osdreambox_V15.5-r0.deb"
+MY_IPK="enigma2-plugin-softcams-ncam_V15.6-r0_all.ipk"
+MY_DEB="enigma2-plugin-softcams-ncam-osdreambox_V15.6-r0.deb"
 
 ########################################################################################################################
 # Auto ... Do not change
